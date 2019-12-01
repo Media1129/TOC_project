@@ -84,7 +84,7 @@ def webhook_handler():
     signature = request.headers["X-Line-Signature"]
     # get request body as text
     body = request.get_data(as_text=True)
-    app.logger.info(f"Request body: {body}")
+    # app.logger.info(f"Request body: {body}")
 
     # parse webhook body
     try:
@@ -101,10 +101,13 @@ def webhook_handler():
         if not isinstance(event.message.text, str):
             continue
         print(f"\nFSM STATE: {machine.state}")
-        print(f"REQUEST BODY: \n{body}")
+        # print(f"REQUEST BODY: \n{body}")
         response = machine.advance(event)
         if response == False:
             send_text_message(event.reply_token, "Not Entering any State")
+        
+        machine.get_graph().draw("fsm.png", prog="dot", format="png")
+        send_file("fsm.png", mimetype="image/png")
 
     return "OK"
 
