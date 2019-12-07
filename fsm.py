@@ -109,9 +109,8 @@ class TocMachine(GraphMachine):
         btn_action=[
             MessageTemplateAction(
                 label='Subway',
-                text='hamegg'
+                text='subway'
             ),
-
             MessageTemplateAction(
                 label='蛋餅',
                 text='chiomelet'
