@@ -6,9 +6,9 @@ from utils import send_button_message
 
 
 class TocMachine(GraphMachine):
-    Ibreakfast = {'calorie':0,'dollar':0,'starch':0,'protein':0,'money':0}
-    Ilunch     = {'calorie':0,'dollar':0,'starch':0,'protein':0,'money':0}   
-    Idinner    = {'calorie':0,'dollar':0,'starch':0,'protein':0,'money':0}
+    Ibreakfast = {'calorie':0,'starch':0,'protein':0,'money':0}
+    Ilunch     = {'calorie':0,'starch':0,'protein':0,'money':0}   
+    Idinner    = {'calorie':0,'starch':0,'protein':0,'money':0}
     height = 175
     weight = 40
     Totalmoney = 1300
@@ -23,29 +23,26 @@ class TocMachine(GraphMachine):
         return text.lower() == "start"
     def on_enter_start(self, event):
         TocMachine.Ibreakfast['calorie'] = 0
-        TocMachine.Ibreakfast['dollar'] = 0
         TocMachine.Ibreakfast['starch'] = 0
         TocMachine.Ibreakfast['protein'] = 0
         TocMachine.Ibreakfast['money'] = 0
         TocMachine.Ilunch['calorie'] = 0
-        TocMachine.Ilunch['dollar'] = 0
         TocMachine.Ilunch['starch'] = 0
         TocMachine.Ilunch['protein'] = 0
         TocMachine.Ilunch['money'] = 0
         TocMachine.Idinner['calorie'] = 0
-        TocMachine.Idinner['dollar'] = 0
         TocMachine.Idinner['starch'] = 0
         TocMachine.Idinner['protein'] = 0
         TocMachine.Idinner['money'] = 0
         
         btn_action=[
             MessageTemplateAction(
-                label='輸入餐點',
-                text='regfood'
+                label='輸入個人資料',
+                text='information'
             ),
             MessageTemplateAction(
-                label='輸入個人資料',
-                text='Information'
+                label='輸入餐點',
+                text='regfood'
             ),
         ]
         reply_token = event.reply_token
@@ -78,14 +75,8 @@ class TocMachine(GraphMachine):
         text = event.message.text
         return text.lower() == "information"
     def on_enter_information(self, event):
-        btn_action=[
-            MessageTemplateAction(
-                label='手動輸入身高',
-                text='height'
-            ),
-        ]
         reply_token = event.reply_token
-        send_button_message(reply_token,btn_action,"輸入資訊")
+        send_text_message(reply_token, "輸入身高(cm)")
     #input the height
     def is_going_to_height(self, event):
         text = event.message.text
@@ -94,14 +85,8 @@ class TocMachine(GraphMachine):
         print("in height")
         text = event.message.text
         TocMachine.height = int(text)
-        btn_action=[
-            MessageTemplateAction(
-                label='手動輸入體重',
-                text='weight'
-            ),
-        ]
         reply_token = event.reply_token
-        send_button_message(reply_token,btn_action,"輸入資訊")
+        send_text_message(reply_token, "輸入體重(kg)")
     #input the weight
     def is_going_to_weight(self, event):
         text = event.message.text
@@ -110,11 +95,40 @@ class TocMachine(GraphMachine):
         text = event.message.text
         TocMachine.weight = int(text)
         print("in weight")
-        print(TocMachine.height,"=height")
-        print(TocMachine.weight,"=weight")
-        #     Totalmoney = 1300
-        # Totalcalorie = 2000
-        # Totalstarch = 700
+        reply_token = event.reply_token
+        send_text_message(reply_token, "輸入每日預算(dollar)")
+
+    #input the money
+    def is_going_to_money(self, event):
+        text = event.message.text
+        return True
+    def on_enter_money(self, event):
+        text = event.message.text
+        TocMachine.Totalmoney = int(text)
+        print("in money")
+        reply_token = event.reply_token
+        send_text_message(reply_token, "輸入年齡")
+    #input the age
+    def is_going_to_age(self, event):
+        text = event.message.text
+        return True
+    def on_enter_age(self, event):
+        text = event.message.text
+        TocMachine.age = int(text)
+        # bmr = (13.7 x 體重) + (5.0 x 身高) – (6.8 x 年齡) + 66
+        bmr = (13.7*TocMachine.weight) + (5*TocMachine.height) - (6.8*TocMachine.age) + 66
+        tdee = bmr * 1.375 - 300
+        TocMachine.Totalstarch = tdee * 0.3/4 #starch=tdee*0.3/4
+        TocMachine.Totalcalorie = tdee
+        # print("in age")
+        # print(TocMachine.height,"=height")
+        # print(TocMachine.weight,"=weight")
+        # print(TocMachine.Totalmoney,"totalmoney")
+        # print(TocMachine.age,"age")
+        # print(bmr,"bmr")
+        # print(tdee,'tdee')
+        # print(TocMachine.Totalcalorie,"Totalcalorie")
+        # print(TocMachine.Totalstarch,"Totalstarch")
         self.go_regfood(event)
 
 
@@ -208,60 +222,58 @@ class TocMachine(GraphMachine):
     def on_enter_breakfast(self, event ,indic=""):
         btn_action=[
             MessageTemplateAction(
-                label='火腿蛋三明治',
+                label='hamegg+dollar',
                 text='hamegg'
             ),
             MessageTemplateAction(
-                label='蛋餅',
+                label='chiomelet+dollar',
                 text='chiomelet'
             ),
             MessageTemplateAction(
-                label='飯糰',
+                label='riceroll+dollar',
                 text='riceroll'
             ),
         ]
         reply_token = event.reply_token
         send_button_message(reply_token,btn_action,"早餐",indic)
-    
+    #next breakfast
     def is_going_to_nextbreakfast(self, event):
         text = event.message.text
         return True
     def on_enter_nextbreakfast(self, event):
         text = event.message.text
-        print(text,"check the nextbreakfast")
-        if text == 'hamegg':
+        input = text.split()
+        print(input)
+        # print(text,"check the nextbreakfast")
+        if input[0].lower() == 'hamegg':
             TocMachine.Ibreakfast['calorie'] = 500
-            TocMachine.Ibreakfast['dollar']  = 500
             TocMachine.Ibreakfast['starch']  = 500
             TocMachine.Ibreakfast['protein'] = 500
-            TocMachine.Ibreakfast['money'] = 500
+            TocMachine.Ibreakfast['money']   = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
             print("in hamegg")
-        elif text == 'chiomelet':
+        elif input[0].lower() == 'chiomelet':
             TocMachine.Ibreakfast['calorie'] = 500
-            TocMachine.Ibreakfast['dollar']  = 500
             TocMachine.Ibreakfast['starch']  = 500
             TocMachine.Ibreakfast['protein'] = 500
-            TocMachine.Ibreakfast['money'] = 500
+            TocMachine.Ibreakfast['money']   = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
             print("in chiomelet")
-        elif text == 'riceroll':
+        elif input[0].lower() == 'riceroll':
             TocMachine.Ibreakfast['calorie'] = 500
-            TocMachine.Ibreakfast['dollar']  = 500
             TocMachine.Ibreakfast['starch']  = 500
             TocMachine.Ibreakfast['protein'] = 500
-            TocMachine.Ibreakfast['money'] = 500
+            TocMachine.Ibreakfast['money']   = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
             print("in riceroll")
         self.go_examine(event,"breakfast")
 
-    
     #lunch
     def is_going_to_lunch(self, event):
         text = event.message.text
@@ -269,19 +281,19 @@ class TocMachine(GraphMachine):
     def on_enter_lunch(self, event,indic=""):
         btn_action=[
             MessageTemplateAction(
-                label='Subway',
+                label='subway+dollar',
                 text='subway'
             ),
             MessageTemplateAction(
-                label='炒飯',
+                label='friedrice+dollar',
                 text='friedrice'
             ),
             MessageTemplateAction(
-                label='乾麵',
+                label='noodles+dollar',
                 text='noodles'
             ),
             MessageTemplateAction(
-                label='便當',
+                label='boxedlunch+dollar',
                 text='boxedlunch'
             )
         ]
@@ -293,44 +305,42 @@ class TocMachine(GraphMachine):
         return True
     def on_enter_nextlunch(self, event):
         text = event.message.text
-        print(text,"check the nextlunch")
-        if text == 'subway':
+        input = text.split()
+        print(input)
+        # print(text,"check the nextlunch")
+        if input[0].lower() == 'subway':
             TocMachine.Ilunch['calorie'] = 600
-            TocMachine.Ilunch['dollar']  = 600
             TocMachine.Ilunch['starch']  = 600
             TocMachine.Ilunch['protein'] = 600
-            TocMachine.Ilunch['money'] = 600
+            TocMachine.Ilunch['money']   = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
             print("in subway")
-        elif text == 'friedrice':
+        elif input[0].lower() == 'friedrice':
             TocMachine.Ilunch['calorie'] = 600
-            TocMachine.Ilunch['dollar']  = 600
             TocMachine.Ilunch['starch']  = 600
             TocMachine.Ilunch['protein'] = 600
-            TocMachine.Ilunch['money'] = 600
+            TocMachine.Ilunch['money'] = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
             print("in friedrice")
 
-        elif text == 'noodles':
+        elif input[0].lower() == 'noodles':
             TocMachine.Ilunch['calorie'] = 600
-            TocMachine.Ilunch['dollar']  = 600
             TocMachine.Ilunch['starch']  = 600
             TocMachine.Ilunch['protein'] = 600
-            TocMachine.Ilunch['money'] = 600
+            TocMachine.Ilunch['money']   = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
             print("in noodles")
-        elif text == 'boxedlunch':
+        elif input[0].lower() == 'boxedlunch':
             TocMachine.Ilunch['calorie'] = 600
-            TocMachine.Ilunch['dollar']  = 600
             TocMachine.Ilunch['starch']  = 600
             TocMachine.Ilunch['protein'] = 600
-            TocMachine.Ilunch['money'] = 600
+            TocMachine.Ilunch['money']   = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
@@ -344,19 +354,19 @@ class TocMachine(GraphMachine):
     def on_enter_dinner(self, event,indic=""):
         btn_action=[
             MessageTemplateAction(
-                label='海南雞飯',
+                label='chickenrice+dollar',
                 text= 'chickenrice'
             ),
             MessageTemplateAction(
-                label='關東煮',
+                label='oden+dollar',
                 text='oden'
             ),
             MessageTemplateAction(
-                label='涼麵',
+                label='coldnoodle+dollar',
                 text='coldnoodle'
             ),
             MessageTemplateAction(
-                label='打拋豬飯',
+                label='chilipork+dollar',
                 text='chilipork'
             )
         ]
@@ -368,49 +378,44 @@ class TocMachine(GraphMachine):
         return True
     def on_enter_nextdinner(self, event):
         text = event.message.text
-        print(text,"check the nextdinner")
-        if text == 'chickenrice':
+        input = text.split()
+        print(input)
+        # print(text,"check the nextdinner")
+        if input[0].lower() == 'chickenrice':
             TocMachine.Idinner['calorie'] = 700
-            TocMachine.Idinner['dollar']  = 700
             TocMachine.Idinner['starch']  = 700
             TocMachine.Idinner['protein'] = 700
-            TocMachine.Idinner['money'] = 700
+            TocMachine.Idinner['money']   = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
             print("in chickenrice")
-        elif text == 'oden':
+        elif input[0].lower() == 'oden':
             TocMachine.Idinner['calorie'] = 700
-            TocMachine.Idinner['dollar']  = 700
             TocMachine.Idinner['starch']  = 700
             TocMachine.Idinner['protein'] = 700
-            TocMachine.Idinner['money'] = 700
+            TocMachine.Idinner['money']   = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
             print("in oden")
 
-        elif text == 'coldnoodle':
+        elif input[0].lower() == 'coldnoodle':
             TocMachine.Idinner['calorie'] = 700
-            TocMachine.Idinner['dollar']  = 700
             TocMachine.Idinner['starch']  = 700
             TocMachine.Idinner['protein'] = 700
-            TocMachine.Idinner['money'] = 700
+            TocMachine.Idinner['money']   = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
             print("in coldnoodle")
-        elif text == 'chilipork':
+        elif input[0].lower() == 'chilipork':
             TocMachine.Idinner['calorie'] = 700
-            TocMachine.Idinner['dollar']  = 700
             TocMachine.Idinner['starch']  = 700
             TocMachine.Idinner['protein'] = 700
-            TocMachine.Idinner['money'] = 700
+            TocMachine.Idinner['money']   = int(input[1])
             print(TocMachine.Ibreakfast['money'],"breakfast")
             print(TocMachine.Ilunch['money'],"lunch")
             print(TocMachine.Idinner['money'],"dinner")
             print("in chilipork")
         self.go_examine(event,"dinner")
-
-    # def on_exit_state2(self):
-    #     print("Leaving state2")

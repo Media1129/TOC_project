@@ -14,7 +14,7 @@ load_dotenv()
 
 machine = TocMachine(
     states=["user","start","information","regfood",'examine',
-            'height','weight',
+            'height','weight','money','age',
             "breakfast",'lunch','dinner',
             'nextbreakfast','nextlunch','nextdinner',
             'money_check','calorie_check','starch_check',
@@ -52,6 +52,20 @@ machine = TocMachine(
             "source": "height",
             "dest": "weight",
             "conditions": "is_going_to_weight",
+        },
+        #money
+        {
+            "trigger": "advance",
+            "source": "weight",
+            "dest": "money",
+            "conditions": "is_going_to_money",
+        },
+        #age
+        {
+            "trigger": "advance",
+            "source": "money",
+            "dest": "age",
+            "conditions": "is_going_to_age",
         },
         #regfood to three meal
         {
@@ -103,7 +117,7 @@ machine = TocMachine(
         {"trigger":"go_lunch","source":['money_deny','calorie_deny','starch_deny'],"dest":"lunch"},
         {"trigger":"go_dinner","source":['money_deny','calorie_deny','starch_deny'],"dest":"dinner"},
         #back to regfood
-        {"trigger":"go_regfood","source":['money_deny','calorie_deny','starch_deny','starch_check','weight'],"dest":"regfood"},
+        {"trigger":"go_regfood","source":['money_deny','calorie_deny','starch_deny','starch_check','age'],"dest":"regfood"},
         #go_examine
         {"trigger": "go_examine", "source": ['nextbreakfast','nextlunch','nextdinner'], "dest": "examine"},
     ],
