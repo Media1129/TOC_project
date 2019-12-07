@@ -13,9 +13,12 @@ load_dotenv()
 
 
 machine = TocMachine(
-    states=["user","start","regfood","breakfast",'lunch','dinner',
-            'nextbreakfast','hamegg','chiomelet','riceroll','hamburger','porridge','steamedbun'
-           
+    states=["user","start","information","regfood",'examine',
+            'height','weight',
+            "breakfast",'lunch','dinner',
+            'nextbreakfast','nextlunch','nextdinner',
+            'money_check','calorie_check','starch_check',
+            'money_deny','calorie_deny','starch_deny',
     ],
     transitions=[
         {
@@ -30,6 +33,27 @@ machine = TocMachine(
             "dest": "regfood",
             "conditions": "is_going_to_regfood",
         },
+        {
+            "trigger": "advance",
+            "source": "start",
+            "dest": "information",
+            "conditions": "is_going_to_information",
+        },
+        #height
+        {
+            "trigger": "advance",
+            "source": "information",
+            "dest": "height",
+            "conditions": "is_going_to_height",
+        },
+        #weight
+        {
+            "trigger": "advance",
+            "source": "height",
+            "dest": "weight",
+            "conditions": "is_going_to_weight",
+        },
+        #regfood to three meal
         {
             "trigger": "advance",
             "source": "regfood",
@@ -51,47 +75,37 @@ machine = TocMachine(
         {
             "trigger": "advance",
             "source": "breakfast",
-            "dest": "hamegg",
-            "conditions": "is_going_to_hamegg",
-        },
-        {
-            "trigger": "advance",
-            "source": "breakfast",
-            "dest": "chiomelet",
-            "conditions": "is_going_to_chiomelet",
-        },
-        {
-            "trigger": "advance",
-            "source": "breakfast",
-            "dest": "riceroll",
-            "conditions": "is_going_to_riceroll",
-        },
-        {
-            "trigger": "advance",
-            "source": "breakfast",
             "dest": "nextbreakfast",
             "conditions": "is_going_to_nextbreakfast",
         },
         {
             "trigger": "advance",
-            "source": "nextbreakfast",
-            "dest": "hamburger",
-            "conditions": "is_going_to_hamburger",
+            "source": "lunch",
+            "dest": "nextlunch",
+            "conditions": "is_going_to_nextlunch",
         },
         {
             "trigger": "advance",
-            "source": "nextbreakfast",
-            "dest": "porridge",
-            "conditions": "is_going_to_porridge",
+            "source": "dinner",
+            "dest": "nextdinner",
+            "conditions": "is_going_to_nextdinner",
         },
-        {
-            "trigger": "advance",
-            "source": "nextbreakfast",
-            "dest": "steamedbun",
-            "conditions": "is_going_to_steamedbun",
-        },
-        
-        # {"trigger": "go_back", "source": ["state1", "state2"], "dest": "user"},
+        #check
+        {"trigger":"go_money","source":"examine","dest":"money_check"},
+        {"trigger":"go_calorie","source":"money_check","dest":"calorie_check"},
+        {"trigger":"go_starch","source":"calorie_check","dest":"starch_check"},
+        #check to deny
+        {"trigger":"go_money_deny","source":"money_check","dest":"money_deny"},
+        {"trigger":"go_calorie_deny","source":"calorie_check","dest":"calorie_deny"},
+        {"trigger":"go_starch_deny","source":"starch_check","dest":"starch_deny"},
+        #back to rechoose 
+        {"trigger":"go_breakfast","source":['money_deny','calorie_deny','starch_deny'],"dest":"breakfast"},
+        {"trigger":"go_lunch","source":['money_deny','calorie_deny','starch_deny'],"dest":"lunch"},
+        {"trigger":"go_dinner","source":['money_deny','calorie_deny','starch_deny'],"dest":"dinner"},
+        #back to regfood
+        {"trigger":"go_regfood","source":['money_deny','calorie_deny','starch_deny','starch_check','weight'],"dest":"regfood"},
+        #go_examine
+        {"trigger": "go_examine", "source": ['nextbreakfast','nextlunch','nextdinner'], "dest": "examine"},
     ],
     initial="user",
     auto_transitions=False,
@@ -163,6 +177,7 @@ def webhook_handler():
             continue
         if not isinstance(event.message.text, str):
             continue
+
         print(f"\nFSM STATE: {machine.state}")
         # print(f"REQUEST BODY: \n{body}")
         response = machine.advance(event)
