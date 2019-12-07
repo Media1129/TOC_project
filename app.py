@@ -5,8 +5,7 @@ from flask import Flask, jsonify, request, abort, send_file
 from dotenv import load_dotenv
 from linebot import LineBotApi, WebhookParser
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
-
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ButtonsTemplate, MessageTemplateAction, PostbackTemplateAction
 from fsm import TocMachine
 from utils import send_text_message
 
@@ -14,21 +13,50 @@ load_dotenv()
 
 
 machine = TocMachine(
-    states=["user", "state1", "state2"],
+    states=["user","start","regfood","breakfast",'lunch','dinner',
+            'nextbreakfast','hamegg','chiomelet','riceroll','hamburger','porridge','steamedbun'
+           
+    ],
     transitions=[
         {
             "trigger": "advance",
             "source": "user",
-            "dest": "state1",
-            "conditions": "is_going_to_state1",
+            "dest": "start",
+            "conditions": "is_going_to_start",
         },
         {
             "trigger": "advance",
-            "source": "user",
-            "dest": "state2",
-            "conditions": "is_going_to_state2",
+            "source": "start",
+            "dest": "regfood",
+            "conditions": "is_going_to_regfood",
         },
-        {"trigger": "go_back", "source": ["state1", "state2"], "dest": "user"},
+        {
+            "trigger": "advance",
+            "source": "regfood",
+            "dest": "breakfast",
+            "conditions": "is_going_to_breakfast",
+        },
+        {
+            "trigger": "advance",
+            "source": "regfood",
+            "dest": "lunch",
+            "conditions": "is_going_to_lunch",
+        },
+        {
+            "trigger": "advance",
+            "source": "regfood",
+            "dest": "dinner",
+            "conditions": "is_going_to_dinner",
+        },
+        {
+            "trigger": "advance",
+            "source": "breakfast",
+            "dest": "nextbreakfast",
+            "conditions": "is_going_to_nextbreakfast",
+        },
+
+        
+        # {"trigger": "go_back", "source": ["state1", "state2"], "dest": "user"},
     ],
     initial="user",
     auto_transitions=False,
