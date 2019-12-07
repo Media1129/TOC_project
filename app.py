@@ -51,10 +51,45 @@ machine = TocMachine(
         {
             "trigger": "advance",
             "source": "breakfast",
+            "dest": "hamegg",
+            "conditions": "is_going_to_hamegg",
+        },
+        {
+            "trigger": "advance",
+            "source": "breakfast",
+            "dest": "chiomelet",
+            "conditions": "is_going_to_chiomelet",
+        },
+        {
+            "trigger": "advance",
+            "source": "breakfast",
+            "dest": "riceroll",
+            "conditions": "is_going_to_riceroll",
+        },
+        {
+            "trigger": "advance",
+            "source": "breakfast",
             "dest": "nextbreakfast",
             "conditions": "is_going_to_nextbreakfast",
         },
-
+        {
+            "trigger": "advance",
+            "source": "nextbreakfast",
+            "dest": "hamburger",
+            "conditions": "is_going_to_hamburger",
+        },
+        {
+            "trigger": "advance",
+            "source": "nextbreakfast",
+            "dest": "porridge",
+            "conditions": "is_going_to_porridge",
+        },
+        {
+            "trigger": "advance",
+            "source": "nextbreakfast",
+            "dest": "steamedbun",
+            "conditions": "is_going_to_steamedbun",
+        },
         
         # {"trigger": "go_back", "source": ["state1", "state2"], "dest": "user"},
     ],

@@ -7,7 +7,7 @@ from utils import send_button_message
 class TocMachine(GraphMachine):
     def __init__(self, **machine_configs):
         self.machine = GraphMachine(model=self, **machine_configs)
-
+    #start
     def is_going_to_start(self, event):
         btn_action=[
             MessageTemplateAction(
@@ -19,7 +19,7 @@ class TocMachine(GraphMachine):
         send_button_message(reply_token,btn_action,"請輸入")
         text = event.message.text
         return text.lower() == "start"
-
+    #input the food
     def is_going_to_regfood(self, event):
        
         btn_action=[
@@ -40,44 +40,7 @@ class TocMachine(GraphMachine):
         send_button_message(reply_token,btn_action,"選擇餐點")
         text = event.message.text
         return text.lower() == "regfood"
-    
-
-    
-    def is_going_to_lunch(self, event):
-        btn_action=[
-            MessageTemplateAction(
-                label='ButtonsTemplate',
-                text='ButtonsTemplate'
-            ),
-            MessageTemplateAction(
-                label='ButtonsTemplate',
-                text='ButtonsTemplate'
-            )
-        ]
-           
-        reply_token = event.reply_token
-        send_button_message(reply_token,btn_action,"午餐")
-
-        text = event.message.text
-        return text.lower() == "lunch"
-    
-    def is_going_to_dinner(self, event):
-        btn_action=[
-            MessageTemplateAction(
-                label='ButtonsTemplate',
-                text='ButtonsTemplate'
-            ),
-            MessageTemplateAction(
-                label='ButtonsTemplate',
-                text='ButtonsTemplate'
-            )
-        ]
-           
-        reply_token = event.reply_token
-        send_button_message(reply_token,btn_action,"晚餐")
-        
-        text = event.message.text
-        return text.lower() == "dinner"
+    #breakfast
     def is_going_to_breakfast(self, event):
         btn_action=[
             MessageTemplateAction(
@@ -95,7 +58,7 @@ class TocMachine(GraphMachine):
             ),
             MessageTemplateAction(
                 label='下一頁',
-                text='next'
+                text='nextbreakfast'
             )
         ]
         reply_token = event.reply_token
@@ -122,9 +85,70 @@ class TocMachine(GraphMachine):
         send_button_message(reply_token,btn_action,"早餐")
         
         text = event.message.text
-        return text.lower() == "next"
+        return text.lower() == "nextbreakfast"
+    def is_going_to_hamegg(self, event):
+        text = event.message.text
+        return text.lower() == "hamegg"
+    def is_going_to_chiomelet(self, event):
+        text = event.message.text
+        return text.lower() == "chiomelet"
+    def is_going_to_riceroll(self, event):
+        text = event.message.text
+        return text.lower() == "riceroll"
+    def is_going_to_hamburger(self, event):
+        text = event.message.text
+        return text.lower() == "hamburger"
+    def is_going_to_porridge(self, event):
+        text = event.message.text
+        return text.lower() == "porridge"
+    def is_going_to_steamedbun(self, event):
+        text = event.message.text
+        return text.lower() == "steamedbun"
+    #lunch
+    def is_going_to_lunch(self, event):
+        btn_action=[
+            MessageTemplateAction(
+                label='Subway',
+                text='hamegg'
+            ),
 
+            MessageTemplateAction(
+                label='蛋餅',
+                text='chiomelet'
+            ),
+            MessageTemplateAction(
+                label='飯糰',
+                text='riceroll'
+            ),
+            MessageTemplateAction(
+                label='下一頁',
+                text='nextbreakfast'
+            )
+        ]
+      
+        reply_token = event.reply_token
+        send_button_message(reply_token,btn_action,"午餐")
 
+        text = event.message.text
+        return text.lower() == "lunch"
+    #dinner
+    def is_going_to_dinner(self, event):
+        btn_action=[
+            MessageTemplateAction(
+                label='ButtonsTemplate',
+                text='ButtonsTemplate'
+            ),
+            MessageTemplateAction(
+                label='ButtonsTemplate',
+                text='ButtonsTemplate'
+            )
+        ]
+           
+        reply_token = event.reply_token
+        send_button_message(reply_token,btn_action,"晚餐")
+        
+        text = event.message.text
+        return text.lower() == "dinner"
 
 
     # def on_enter_state1(self, event):
