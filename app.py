@@ -13,68 +13,59 @@ load_dotenv()
 
 
 machine = TocMachine(
-    states=["user","start","information","regfood",'examine',
-            'height','weight','money','age','showeat','showback',"showsuggest",
+    states=["user","start","information","regfood",
+            'height','weight','money','age','showeat','showback',"showsuggest","showfsm",
             "breakfast",'lunch','dinner','regtostart',
             'nextbreakfast','nextlunch','nextdinner',
             'money_check','calorie_check','starch_check',
             'money_deny','calorie_deny','starch_deny',
     ],
     transitions=[
-        {"trigger": "advance","source": "user","dest": "start","conditions": "is_going_to_start",},
+        #first from initial state user to start
+        {"trigger": "advance","source": "user","dest": "information","conditions": "is_going_to_information",},
+        #from start to choose function
         {"trigger": "advance","source": "start","dest": "regfood","conditions": "is_going_to_regfood",},
         {"trigger": "advance","source": "start","dest": "information","conditions": "is_going_to_information",},
-        #height
+        {"trigger": "advance","source": "start","dest": "showsuggest","conditions": "is_going_to_showsuggest",},
+        {"trigger": "advance","source": "start","dest": "showfsm","conditions": "is_going_to_showfsm",},
+        #input the self information (height->weight->money->age)
         {"trigger": "advance","source": "information","dest": "height","conditions": "is_going_to_height",},
-        #weight
         {"trigger": "advance","source": "height","dest": "weight","conditions": "is_going_to_weight",},
-        #money
         {"trigger": "advance","source": "weight","dest": "money","conditions": "is_going_to_money",},
-        #age
         {"trigger": "advance","source": "money","dest": "age","conditions": "is_going_to_age",},
-        #regfood to three meal
+        #regfood(choose which meal eated) to three meal
         {"trigger": "advance","source": "regfood","dest": "breakfast","conditions": "is_going_to_breakfast",},
         {"trigger": "advance","source": "regfood","dest": "lunch","conditions": "is_going_to_lunch",},
         {"trigger": "advance","source": "regfood","dest": "dinner","conditions": "is_going_to_dinner",},
         {"trigger": "advance","source": "regfood","dest": "showeat","conditions": "is_going_to_showeat",},
-        
-        #show suggest and back
-        {"trigger": "advance","source": "start","dest": "showsuggest","conditions": "is_going_to_showsuggest",},
-        {"trigger": "advance","source": "showsuggest","dest": "regtostart","conditions": "is_going_to_regtostart",},
-        
-        #show eat to back
-        {"trigger": "advance","source": "showeat","dest": "showback","conditions": "is_going_to_showback",},
-        
-        
-        #regfood back to start
-        {"trigger": "advance","source": "regfood","dest": "regtostart","conditions": "is_going_to_regtostart",},
-        
-
-
         #three meal to next 
         {"trigger": "advance","source": "breakfast","dest": "nextbreakfast","conditions": "is_going_to_nextbreakfast",},
         {"trigger": "advance","source": "lunch","dest": "nextlunch","conditions": "is_going_to_nextlunch",},
         {"trigger": "advance","source": "dinner","dest": "nextdinner","conditions": "is_going_to_nextdinner",},
-        #check
-        {"trigger":"go_money","source":"examine","dest":"money_check"},
+        
+        #three check by (money calorie starch)
+        {"trigger":"go_money","source":['nextbreakfast','nextlunch','nextdinner'],"dest":"money_check"},
         {"trigger":"go_calorie","source":"money_check","dest":"calorie_check"},
         {"trigger":"go_starch","source":"calorie_check","dest":"starch_check"},
-        #check to deny
+        #when check is not allow go to the deny
         {"trigger":"go_money_deny","source":"money_check","dest":"money_deny"},
         {"trigger":"go_calorie_deny","source":"calorie_check","dest":"calorie_deny"},
         {"trigger":"go_starch_deny","source":"starch_check","dest":"starch_deny"},
-        #back to rechoose 
+        #from deny to original meal(for rechoose the meal) 
         {"trigger":"go_breakfast","source":['money_deny','calorie_deny','starch_deny'],"dest":"breakfast"},
         {"trigger":"go_lunch","source":['money_deny','calorie_deny','starch_deny'],"dest":"lunch"},
         {"trigger":"go_dinner","source":['money_deny','calorie_deny','starch_deny'],"dest":"dinner"},
+
+        #back to start
+        {"trigger": "advance","source": ["showsuggest","regfood","showfsm"],"dest": "regtostart","conditions": "is_going_to_regtostart",},
+        #back to start by go
+        {"trigger":"go_regtostart","source":['regtostart','age'],"dest":"start"},
+        #from showeat go to showback
+        {"trigger": "advance","source": "showeat","dest": "showback","conditions": "is_going_to_showback",},
         #back to regfood
-        {"trigger":"go_regfood","source":['money_deny','calorie_deny','starch_deny','starch_check','age','showback'],"dest":"regfood"},
+        {"trigger":"go_regfood","source":['starch_check','showback'],"dest":"regfood"},
         
         
-        #go_examine
-        {"trigger": "go_examine", "source": ['nextbreakfast','nextlunch','nextdinner'], "dest": "examine"},
-        #regfood to start
-        {"trigger":"go_regtostart","source":['regtostart'],"dest":"start"},
         
         
     ],
