@@ -14,96 +14,47 @@ load_dotenv()
 
 machine = TocMachine(
     states=["user","start","information","regfood",'examine',
-            'height','weight','money','age',
-            "breakfast",'lunch','dinner',
+            'height','weight','money','age','showeat','showback',"showsuggest",
+            "breakfast",'lunch','dinner','regtostart',
             'nextbreakfast','nextlunch','nextdinner',
             'money_check','calorie_check','starch_check',
             'money_deny','calorie_deny','starch_deny',
     ],
     transitions=[
-        {
-            "trigger": "advance",
-            "source": "user",
-            "dest": "start",
-            "conditions": "is_going_to_start",
-        },
-        {
-            "trigger": "advance",
-            "source": "start",
-            "dest": "regfood",
-            "conditions": "is_going_to_regfood",
-        },
-        {
-            "trigger": "advance",
-            "source": "start",
-            "dest": "information",
-            "conditions": "is_going_to_information",
-        },
+        {"trigger": "advance","source": "user","dest": "start","conditions": "is_going_to_start",},
+        {"trigger": "advance","source": "start","dest": "regfood","conditions": "is_going_to_regfood",},
+        {"trigger": "advance","source": "start","dest": "information","conditions": "is_going_to_information",},
         #height
-        {
-            "trigger": "advance",
-            "source": "information",
-            "dest": "height",
-            "conditions": "is_going_to_height",
-        },
+        {"trigger": "advance","source": "information","dest": "height","conditions": "is_going_to_height",},
         #weight
-        {
-            "trigger": "advance",
-            "source": "height",
-            "dest": "weight",
-            "conditions": "is_going_to_weight",
-        },
+        {"trigger": "advance","source": "height","dest": "weight","conditions": "is_going_to_weight",},
         #money
-        {
-            "trigger": "advance",
-            "source": "weight",
-            "dest": "money",
-            "conditions": "is_going_to_money",
-        },
+        {"trigger": "advance","source": "weight","dest": "money","conditions": "is_going_to_money",},
         #age
-        {
-            "trigger": "advance",
-            "source": "money",
-            "dest": "age",
-            "conditions": "is_going_to_age",
-        },
+        {"trigger": "advance","source": "money","dest": "age","conditions": "is_going_to_age",},
         #regfood to three meal
-        {
-            "trigger": "advance",
-            "source": "regfood",
-            "dest": "breakfast",
-            "conditions": "is_going_to_breakfast",
-        },
-        {
-            "trigger": "advance",
-            "source": "regfood",
-            "dest": "lunch",
-            "conditions": "is_going_to_lunch",
-        },
-        {
-            "trigger": "advance",
-            "source": "regfood",
-            "dest": "dinner",
-            "conditions": "is_going_to_dinner",
-        },
-        {
-            "trigger": "advance",
-            "source": "breakfast",
-            "dest": "nextbreakfast",
-            "conditions": "is_going_to_nextbreakfast",
-        },
-        {
-            "trigger": "advance",
-            "source": "lunch",
-            "dest": "nextlunch",
-            "conditions": "is_going_to_nextlunch",
-        },
-        {
-            "trigger": "advance",
-            "source": "dinner",
-            "dest": "nextdinner",
-            "conditions": "is_going_to_nextdinner",
-        },
+        {"trigger": "advance","source": "regfood","dest": "breakfast","conditions": "is_going_to_breakfast",},
+        {"trigger": "advance","source": "regfood","dest": "lunch","conditions": "is_going_to_lunch",},
+        {"trigger": "advance","source": "regfood","dest": "dinner","conditions": "is_going_to_dinner",},
+        {"trigger": "advance","source": "regfood","dest": "showeat","conditions": "is_going_to_showeat",},
+        
+        #show suggest and back
+        {"trigger": "advance","source": "start","dest": "showsuggest","conditions": "is_going_to_showsuggest",},
+        {"trigger": "advance","source": "showsuggest","dest": "regtostart","conditions": "is_going_to_regtostart",},
+        
+        #show eat to back
+        {"trigger": "advance","source": "showeat","dest": "showback","conditions": "is_going_to_showback",},
+        
+        
+        #regfood back to start
+        {"trigger": "advance","source": "regfood","dest": "regtostart","conditions": "is_going_to_regtostart",},
+        
+
+
+        #three meal to next 
+        {"trigger": "advance","source": "breakfast","dest": "nextbreakfast","conditions": "is_going_to_nextbreakfast",},
+        {"trigger": "advance","source": "lunch","dest": "nextlunch","conditions": "is_going_to_nextlunch",},
+        {"trigger": "advance","source": "dinner","dest": "nextdinner","conditions": "is_going_to_nextdinner",},
         #check
         {"trigger":"go_money","source":"examine","dest":"money_check"},
         {"trigger":"go_calorie","source":"money_check","dest":"calorie_check"},
@@ -117,9 +68,15 @@ machine = TocMachine(
         {"trigger":"go_lunch","source":['money_deny','calorie_deny','starch_deny'],"dest":"lunch"},
         {"trigger":"go_dinner","source":['money_deny','calorie_deny','starch_deny'],"dest":"dinner"},
         #back to regfood
-        {"trigger":"go_regfood","source":['money_deny','calorie_deny','starch_deny','starch_check','age'],"dest":"regfood"},
+        {"trigger":"go_regfood","source":['money_deny','calorie_deny','starch_deny','starch_check','age','showback'],"dest":"regfood"},
+        
+        
         #go_examine
         {"trigger": "go_examine", "source": ['nextbreakfast','nextlunch','nextdinner'], "dest": "examine"},
+        #regfood to start
+        {"trigger":"go_regtostart","source":['regtostart'],"dest":"start"},
+        
+        
     ],
     initial="user",
     auto_transitions=False,
