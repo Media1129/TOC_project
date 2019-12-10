@@ -80,15 +80,102 @@ Or You can use [servo](http://serveo.net/) to expose local servers to the intern
 ## Usage
 The initial state is set to `user`.
 
-Every time `user` state is triggered to `advance` to another state, it will `go_back` to `user` state after the bot replies corresponding message.
+Below is the all states and its menaing
+```sh
+The State Meaning
+```
+* user (state)		
+    * Input:"start"
+    * Reply:![](https://i.imgur.com/Py2cMeM.jpg)
+* start (state)
+    * Input:information
+    * Reply:![](https://i.imgur.com/GgFHern.jpg)
+    * Input: regfood
+    * Reply: ![](https://i.imgur.com/eBt1frP.jpg)
+    * Input: showsuggest
+    * Reply: ![](https://i.imgur.com/33bejLn.jpg)
+    * Input: showfsm
+    * Reply: ![](https://i.imgur.com/XE0SuRK.jpg)
 
-* user
-	* Input: "go to state1"
-		* Reply: "I'm entering state1"
-
-	* Input: "go to state2"
-		* Reply: "I'm entering state2"
-
+* information (state)
+    * function: deal with input information
+* height (state)
+    * Input:身高數值(int)
+    * Reply:![](https://i.imgur.com/GgFHern.jpg)
+* weight (state)
+    * Input:體重數值(int)
+    * Reply:![](https://i.imgur.com/0nBPJIq.jpg)
+* money (state)
+    * Input:預算數值(int)
+    * Reply:![](https://i.imgur.com/aMvQlIP.jpg)
+* age (state)
+    * Input:年齡數值(int)
+    * Reply:![](https://i.imgur.com/bBIAz3n.jpg)
+* regfood (state)
+    * Input:breakfast
+    * Reply: ![](https://i.imgur.com/6DGsKL3.jpg)
+    * Input:lunch
+    * Reply: ![](https://i.imgur.com/M00WJzG.jpg)
+    * Input:dinner
+    * Reply: ![](https://i.imgur.com/hDmJ83X.jpg)
+    * Input:showeat
+    * Reply: ![](https://i.imgur.com/wsEMywb.jpg)
+    * Input:"1"
+    * Reply: ![](https://i.imgur.com/eBt1frP.jpg)
+* breakfast (state)
+    * Input:
+        * hamegg
+        * chiomelet
+        * riceroll
+    * Reply:![](https://i.imgur.com/90LOoCa.jpg)
+* nextbreakfast (state)
+    * for read the breakfast price input
+* lunch(state)
+    * Input:
+        * subway
+        * friedrice
+        * noodles
+        * boxedlunch
+    * Reply:![](https://i.imgur.com/90LOoCa.jpg)
+* nextlunch (state)
+    * for read the lunch price input
+* dinner(state)
+    * Input:
+        * chickenrice
+        * oden
+        * coldnoodle
+        * chilipork
+    * Reply:![](https://i.imgur.com/90LOoCa.jpg)
+* nextdinner (state)
+    * for read the dinner and price input
+* showeat (state)
+    * Input:"1"
+    * Reply![](https://i.imgur.com/2AnWV4h.jpg)
+* showsuggest (state)
+    * Input:"1"
+    * Reply:![](https://i.imgur.com/TPH6OTY.jpg)
+* showfsm (state)
+    * Input:"1"
+    * Reply:![](https://i.imgur.com/bBIAz3n.jpg)
+* money_check (state)
+    * check the money is small than setting 
+* calorie_check (state)
+    * check the calorie is small than setting 
+* starch_check (state)
+    * check the starch is small than setting 
+* money_deny (state)
+   * deny the money  
+* calorie_deny (state)
+    * deny the money  
+* starch_deny (state)
+    * deny the starch  
+* regtostart (state)
+   * regfood go to start 
+* showback (state)
+   * go to regfood
+```sh
+The Screenshot Demo the Project
+```
 ## Deploy
 Setting to deploy webhooks on AWS CLOUD server.
 
@@ -120,7 +207,7 @@ ssh -i ~/.ssh/MyKeyPair.pem ubuntu@ip
 
 1. Install the python3 environment
 
-3. run ngrok http
+2. run ngrok http
 
 	./ngrok http 8000
 
