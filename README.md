@@ -15,19 +15,17 @@ More details in the [Slides](https://hackmd.io/@TTW/ToC-2019-Project#) and [FAQ]
 
 ### Prerequisite
 * Python 3.6
-* Pipenv
-* Facebook Page and App
+* line Page and App
 * HTTPS Server
 
-#### Install Dependency
+#### Install Pygraphviz(For visualizing Finite State Machine)
 ```sh
-pip3 install pipenv
+sudo apt-get install graphviz libgraphviz-dev pkg-config
 
-pipenv --three
+sudo apt-get install python3.6-dev
 
-pipenv install
+pip3 install pygraphviz
 
-pipenv shell
 ```
 
 * pygraphviz (For visualizing Finite State Machine)
@@ -36,15 +34,21 @@ pipenv shell
 
 
 #### Secret Data
-You should generate a `.env` file to set Environment Variables refer to our `.env.sample`.
-`LINE_CHANNEL_SECRET` and `LINE_CHANNEL_ACCESS_TOKEN` **MUST** be set to proper values.
+You should generate a `.env` file to set Environment Variables refer to our `.env` file`LINE_CHANNEL_SECRET` and `LINE_CHANNEL_ACCESS_TOKEN` **MUST** be set to proper values.
 Otherwise, you might not be able to run your code.
 
 #### Run Locally
 You can either setup https server or using `ngrok` as a proxy.
 
 #### a. Ngrok installation
-* [ macOS, Windows, Linux](https://ngrok.com/download)
+```sh
+download the ngrok by below link
+
+unzip /path/to/ngrok.zip
+
+./ngrok authtoken <YOUR_AUTH_TOKEN> 
+```
+* [ Donwload ngrok link](https://ngrok.com/download)
 
 or you can use Homebrew (MAC)
 ```sh
@@ -71,7 +75,7 @@ Or You can use [servo](http://serveo.net/) to expose local servers to the intern
 
 
 ## Finite State Machine
-![fsm](./img/show-fsm.png)
+![fsm](./fsm.png)
 
 ## Usage
 The initial state is set to `user`.
@@ -86,68 +90,42 @@ Every time `user` state is triggered to `advance` to another state, it will `go_
 		* Reply: "I'm entering state2"
 
 ## Deploy
-Setting to deploy webhooks on Heroku.
+Setting to deploy webhooks on AWS CLOUD server.
 
-### Heroku CLI installation
+### Connect to AWS
 
-* [macOS, Windows](https://devcenter.heroku.com/articles/heroku-cli)
+1. Register AWS Educate: https://aws.amazon.com/tw/education/awseducate/
 
-or you can use Homebrew (MAC)
+2. Create EC2 Service:
+    Services > Compute > EC2
+
+3. Launch Instance
+
+4. Choose Ubuntu 18.04 AMI
+
+5. Create and Download SSH key pair 
+
+6. Use ssh login AWS server
 ```sh
-brew tap heroku/brew && brew install heroku
+mv ~/Downloads/MyKeyPair.pem ~/.ssh/MyKeyPair.pem
+
+chmod 400 ~/.ssh/MyKeyPair.pem
+
+ssh -i ~/.ssh/MyKeyPair.pem ubuntu@ip
 ```
 
-or you can use Snap (Ubuntu 16+)
-```sh
-sudo snap install --classic heroku
-```
 
-### Connect to Heroku
 
-1. Register Heroku: https://signup.heroku.com
+### Run project on AWS CLOUD PLATFORM
 
-2. Create Heroku project from website
+1. Install the python3 environment
 
-3. CLI Login
+3. run ngrok http
 
-	`heroku login`
+	./ngrok http 8000
 
-### Upload project to Heroku
-
-1. Add local project to Heroku project
-
-	heroku git:remote -a {HEROKU_APP_NAME}
-
-2. Upload project
-
-	```
-	git add .
-	git commit -m "Add code"
-	git push -f heroku master
-	```
-
-3. Set Environment - Line Messaging API Secret Keys
-
-	```
-	heroku config:set LINE_CHANNEL_SECRET=your_line_channel_secret
-	heroku config:set LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token
-	```
-
-4. Your Project is now running on Heroku!
-
-	url: `{HEROKU_APP_NAME}.herokuapp.com/callback`
-
-	debug command: `heroku logs --tail --app {HEROKU_APP_NAME}`
-
-5. If fail with `pygraphviz` install errors
-
-	run commands below can solve the problems
-	```
-	heroku buildpacks:set heroku/python
-	heroku buildpacks:add --index 1 heroku-community/apt
-	```
-
-	refference: https://hackmd.io/@ccw/B1Xw7E8kN?type=view#Q2-如何在-Heroku-使用-pygraphviz
+3. run the app.py
+    python3 app.py
 
 ## Reference
 [Pipenv](https://medium.com/@chihsuan/pipenv-更簡單-更快速的-python-套件管理工具-135a47e504f4) ❤️ [@chihsuan](https://github.com/chihsuan)
